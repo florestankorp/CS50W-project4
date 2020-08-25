@@ -8,7 +8,7 @@
     <div>{{ message }}</div>
     {% endif %}
 
-    <form action="{% url 'register' %}"
+    <form action="{% url 'network:register' %}"
           method="post">
         {% csrf_token %}
         <div class="form-group">
@@ -41,6 +41,6 @@
                value="Register">
     </form>
 
-    Already have an account? <a href="{% url 'login' %}">Log In here.</a>
+    Already have an account? <a href="{% url 'network:login' %}">Log In here.</a>
 </div>
 {% endblock %}
