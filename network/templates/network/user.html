@@ -4,25 +4,41 @@
 {% block body %}
 
 <div class="container">
-        <p>Following: {{following}}</p>
-        <p>Followers: {{followers}}</p>
-        <form class="follow-button-form"
-              action="{% url 'network:user' user.pk %}"
-              method="post">
-                {% csrf_token %}
-                {% if is_followed %}
-                <button class="follow-button"
-                        type="submit"
-                        value=follow
-                        name=follow><i class="fa fa-minus-circle"></i></button>
-                {% else %}
-                <button class="follow-button"
-                        type="submit"
-                        value=follow
-                        name=follow><i class="fa fa-plus-circle"></i></i></button>
+        <h2>{{current_user}}</h2>
+        <div class="follow">
+                <!-- users cannot follow themselves-->
+                {% if current_user.pk != logged_in_user.pk %}
+                <form class="follow-button-form"
+                      action="{% url 'network:user' current_user.pk %}"
+                      method="post">
+                        {% csrf_token %}
+                        {% if is_followed %}
+                        <button class="unfollow-button"
+                                type="submit"
+                                value=follow
+                                name=follow>
+                                <i class="fa fa-minus-circle red"></i>
+                                <span>Unfollow</span>
+                        </button>
+                        {% else %}
+                        <button class="follow-button"
+                                type="submit"
+                                value=follow
+                                name=follow>
+                                <i class="fa fa-plus-circle blue"></i>
+                                <span>Follow</span>
+                        </button>
+                        {% endif %}
+                </form>
+                <span><small class="text-muted mr-2">|</small></span>
                 {% endif %}
-        </form>
+                <p class="card-text">
+                        <small class="text-muted"> <span class="bold">Following: </span> {{following}}</small>
+                        <small class="text-muted"> <span class="bold">Followers: </span>{{followers}}</small>
+                </p>
 
+
+        </div>
         {% for post in posts %}
         {% include "network/post.html" with post=post %}
         {% endfor %}

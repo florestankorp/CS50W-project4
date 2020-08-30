@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -18,13 +18,24 @@ def post(request):
     fetched_user = User.objects.get(email=request.user.email)
 
     if request.method == "POST":
-        body = request.POST["post-body"]
-        new_post = Post.objects.create(user=fetched_user, body=body)
-        new_post.save()
-
-        return HttpResponseRedirect(reverse("network:index"))
+        if "post" in request.POST:
+            body = request.POST["post-body"]
+            new_post = Post.objects.create(user=fetched_user, body=body)
+            new_post.save()
+            return HttpResponseRedirect(reverse("network:index"))
 
     return render(request, "network/index.html")
+
+
+def like(request, post_id):
+    print(post_id)
+
+    if "like" in request.POST:
+        print("like")
+        # toggle_liked()
+        return HttpResponse("done")
+
+    # return HttpResponseRedirect(reverse("network:index"))
 
 
 @login_required
@@ -54,10 +65,10 @@ def user(request, user_id):
         current_user.following.all().filter(pk=logged_in_user.pk).exists()
     )
 
-    fetched_followers = (
+    fetched_following = (
         User.objects.all().filter(following=current_user).count()
     )
-    fetched_following = (
+    fetched_followers = (
         User.objects.all().filter(followers=current_user).count()
     )
     fetched_posts = Post.objects.filter(user=current_user).reverse()
@@ -74,7 +85,8 @@ def user(request, user_id):
         "network/user.html",
         {
             "is_followed": is_followed,
-            "user": current_user,
+            "logged_in_user": logged_in_user,
+            "current_user": current_user,
             "posts": fetched_posts,
             "following": fetched_following,
             "followers": fetched_followers,

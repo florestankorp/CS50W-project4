@@ -3,12 +3,27 @@
         <a href="{% url 'network:user' post.user.pk %}"
            class="card-title">{{post.user.username}}</a>
         <p class="card-text">{{post.body}}</p>
-        <!-- NOT LIKED -->
-        <button class="like-button"><i class="fa fa-heart-o"></i><span
-                  class="likes-count">{{post.likes.count}}</span></button>
-        <!-- LIKED -->
-        <button class="like-button"><i class="fa fa-heart"></i><span
-                  class="likes-count">{{post.likes.count}}</span></button>
+        <form class="follow-button-form"
+              action="{% url 'network:like' post.pk %}"
+              method="post">
+            {% csrf_token %}
+            {% if is_liked %}
+            <button class="unlike-button"
+                    type="submit"
+                    value=like
+                    name=like>
+                <i class="fa fa-heart"></i>
+            </button>
+            {% else %}
+            <button class="like-button"
+                    type="submit"
+                    value=like
+                    name=like>
+                <i class="fa fa-heart-o"></i>
+            </button>
+            {% endif %}
+            <span class="likes-count">{{post.likes.count}}</span>
+        </form>
         <p class="card-text"><small class="text-muted">{{post.timestamp}}</small></p>
     </div>
 </div>

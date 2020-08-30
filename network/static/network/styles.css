@@ -1,6 +1,11 @@
 .container {
     width: 50%;
     margin: 0 auto;
+    margin-top: 15px;
+}
+
+.follow {
+    display: flex;
 }
 
 .likes-count {
@@ -8,10 +13,10 @@
 }
 
 .fa-heart {
-    color: red;
+    color: indianred;
 }
 
-.like-button, .follow-button {
+.like-button, .follow-button, .unfollow-button {
     background: none;
     cursor: pointer;
     border: 0;
@@ -29,18 +34,26 @@ button:focus {
 .error {
     padding: 0;
     list-style: none;
-    color: orangered;
+    color: indianred;
+}
+
+.bold {
+    font-weight: bold;
 }
 
 ul {
-    margin-top: 15px;
+    /* margin-top: 15px; */
     padding: 0;
 }
 
-.blue {
-    color: blue;
+.blue, .follow-button {
+    color: cornflowerblue;
 }
 
-.red {
-    color: red;
+.red, .unfollow-button {
+    color: indianred;
+}
+
+.follow-button, .unfollow-button {
+    padding-left: 0;
 }
