@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -24,6 +25,20 @@ def post(request):
         return HttpResponseRedirect(reverse("network:index"))
 
     return render(request, "network/index.html")
+
+
+@login_required
+def following(request):
+    posts = []
+    user = User.objects.get(email=request.user.email)
+    fetched_following = User.objects.all().filter(following=user)
+
+    for follow in fetched_following:
+        fetched_posts = list(Post.objects.filter(user=follow))
+        for flat_post in fetched_posts:
+            posts.append(flat_post)
+
+    return render(request, "network/following.html", {"posts": posts})
 
 
 def login_view(request):
