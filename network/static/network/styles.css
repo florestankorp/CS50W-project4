@@ -11,7 +11,7 @@
     color: red;
 }
 
-.like-button {
+.like-button, .follow-button {
     background: none;
     cursor: pointer;
     border: 0;
@@ -24,4 +24,23 @@ button:focus {
 .card {
     margin-top: 15px;
     margin-bottom: 15px;
+}
+
+.error {
+    padding: 0;
+    list-style: none;
+    color: orangered;
+}
+
+ul {
+    margin-top: 15px;
+    padding: 0;
+}
+
+.blue {
+    color: blue;
+}
+
+.red {
+    color: red;
 }

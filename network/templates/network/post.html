@@ -1,0 +1,14 @@
+<div class="card">
+    <div class="card-body">
+        <a href="{% url 'network:user' post.user.pk %}"
+           class="card-title">{{post.user.username}}</a>
+        <p class="card-text">{{post.body}}</p>
+        <!-- NOT LIKED -->
+        <button class="like-button"><i class="fa fa-heart-o"></i><span
+                  class="likes-count">{{post.likes.count}}</span></button>
+        <!-- LIKED -->
+        <button class="like-button"><i class="fa fa-heart"></i><span
+                  class="likes-count">{{post.likes.count}}</span></button>
+        <p class="card-text"><small class="text-muted">{{post.timestamp}}</small></p>
+    </div>
+</div>

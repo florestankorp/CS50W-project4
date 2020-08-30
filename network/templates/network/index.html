@@ -3,6 +3,15 @@
 
 {% block body %}
 <div class="container">
+    {% if messages %}
+    <ul class="mt-10">
+        {% for message in messages %}
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+        <li class="error">{{ message }}</li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+    {% endif %}
     {% if user.is_authenticated %}
     <div class="card">
         <div class="card-body">
@@ -24,25 +33,8 @@
     {% endif %}
 
     {% for post in posts %}
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">{{post.user.username}}</h5>
-            <p class="card-text">{{post.body}}</p>
-            <!-- NOT LIKED -->
-            <button class="like-button"><i class="fa fa-heart-o"></i><span
-                      class="likes-count">{{post.likes.count}}</span></button>
-            <!-- LIKED -->
-            <button class="like-button"><i class="fa fa-heart"></i><span
-                      class="likes-count">{{post.likes.count}}</span></button>
-            <p class="card-text"><small class="text-muted">{{post.timestamp}}</small></p>
-        </div>
-    </div>
+    {% include "network/post.html" with post=post %}
     {% endfor %}
 
 </div>
-{% endblock %}
-
-{% block script %}
-<script type="text/javascript"
-        src="{% static 'network/main.js' %}"></script>
 {% endblock %}
