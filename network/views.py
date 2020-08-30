@@ -4,14 +4,25 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+from .models import Post, User
 
 
 def index(request):
-    return render(request, "network/index.html")
+    posts = Post.objects.all().order_by("timestamp").reverse()
+    return render(request, "network/index.html", {"posts": posts})
 
 
 def post(request):
+    user = User.objects.get(email=request.user.email)
+
+    if request.method == "POST":
+        body = request.POST["post-body"]
+
+        new_post = Post.objects.create(user=user, body=body)
+        new_post.save()
+
+        return HttpResponseRedirect(reverse("network:index"))
+
     return render(request, "network/index.html")
 
 
@@ -26,7 +37,7 @@ def login_view(request):
         # Check if authentication successful
         if user is not None:
             login(request, user)
-            return HttpResponseRedirect(reverse("index"))
+            return HttpResponseRedirect(reverse("network:index"))
         else:
             return render(
                 request,
@@ -39,7 +50,7 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    return HttpResponseRedirect(reverse("index"))
+    return HttpResponseRedirect(reverse("network:index"))
 
 
 def register(request):
@@ -68,6 +79,6 @@ def register(request):
                 {"message": "Username already taken."},
             )
         login(request, user)
-        return HttpResponseRedirect(reverse("index"))
+        return HttpResponseRedirect(reverse("network:index"))
     else:
         return render(request, "network/register.html")

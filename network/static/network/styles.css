@@ -2,3 +2,26 @@
     width: 50%;
     margin: 0 auto;
 }
+
+.likes-count {
+    margin-left: 5px;
+}
+
+.fa-heart {
+    color: red;
+}
+
+.like-button {
+    background: none;
+    cursor: pointer;
+    border: 0;
+}
+
+button:focus {
+    outline: 0;
+}
+
+.card {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
