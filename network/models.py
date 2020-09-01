@@ -4,12 +4,8 @@ from django.db import models
 
 class User(AbstractUser):
     followers = models.ManyToManyField(
-        "self", symmetrical=False, related_name="following"
+        "self", blank=True, symmetrical=False, related_name="following"
     )
-
-
-class Like(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
 
 
 class Post(models.Model):

@@ -1,5 +1,9 @@
+{% load is_liked %}
+{% is_liked post.pk request.user.pk as liked_by_user_flag %}
+
 <div class="card">
     <div class="card-body">
+        <pre>{{post.likes.length}}</pre>
         <a href="{% url 'network:user' post.user.pk %}"
            class="card-title">{{post.user.username}}</a>
         <p class="card-text">{{post.body}}</p>
@@ -7,7 +11,7 @@
               action="{% url 'network:like' post.pk %}"
               method="post">
             {% csrf_token %}
-            {% if is_liked %}
+            {% if liked_by_user_flag %}
             <button class="unlike-button"
                     type="submit"
                     value=like

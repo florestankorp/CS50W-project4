@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -27,15 +27,14 @@ def post(request):
     return render(request, "network/index.html")
 
 
+@login_required
 def like(request, post_id):
-    print(post_id)
+    fetched_user = User.objects.get(email=request.user.email)
 
-    if "like" in request.POST:
-        print("like")
-        # toggle_liked()
-        return HttpResponse("done")
-
-    # return HttpResponseRedirect(reverse("network:index"))
+    if request.method == "POST":
+        if "like" in request.POST:
+            toggle_liked(fetched_user, post_id)
+            return HttpResponseRedirect(request.headers["Referer"])
 
 
 @login_required
@@ -45,7 +44,7 @@ def following(request):
     fetched_following = User.objects.all().filter(following=fetched_user)
 
     for follow in fetched_following:
-        fetched_posts = list(Post.objects.filter(user=follow).reverse())
+        fetched_posts = list(Post.objects.filter(user=follow))
         for flat_post in fetched_posts:
             posts.append(flat_post)
 
@@ -155,7 +154,6 @@ def register(request):
 
 
 def toggle_followed(logged_in_user, current_user):
-    # is the logged in user following the current user?
     is_logged_in_user_is_following_current_user = (
         current_user.following.all().filter(pk=logged_in_user.pk).exists()
     )
@@ -166,3 +164,18 @@ def toggle_followed(logged_in_user, current_user):
         logged_in_user.followers.add(current_user)
 
     return is_logged_in_user_is_following_current_user
+
+
+def toggle_liked(logged_in_user, post_id):
+
+    fetched_post = Post.objects.get(pk=post_id)
+    has_user_liked_current_post = (
+        fetched_post.likes.all().filter(pk=logged_in_user.pk).exists()
+    )
+
+    if has_user_liked_current_post:
+        fetched_post.likes.remove(logged_in_user)
+    else:
+        fetched_post.likes.add(logged_in_user)
+
+    return has_user_liked_current_post

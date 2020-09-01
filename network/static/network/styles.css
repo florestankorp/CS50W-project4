@@ -16,7 +16,7 @@
     color: indianred;
 }
 
-.like-button, .follow-button, .unfollow-button {
+.like-button, .unlike-button, .follow-button, .unfollow-button {
     background: none;
     cursor: pointer;
     border: 0;
