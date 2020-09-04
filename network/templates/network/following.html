@@ -3,8 +3,12 @@
 
 {% block body %}
 <div class="container">
+    {% include "network/paginate.html" with posts=posts %}
+
     {% for post in posts %}
     {% include "network/post.html" with post=post %}
     {% endfor %}
+
+    {% include "network/paginate.html" with posts=posts %}
 </div>
 {% endblock %}

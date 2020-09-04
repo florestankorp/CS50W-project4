@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -11,6 +12,16 @@ from .models import Post, User
 
 def index(request):
     posts = Post.objects.all().order_by("timestamp").reverse()
+    page = request.GET.get("page", 1)
+    paginator = Paginator(posts, 10)
+
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+
     return render(request, "network/index.html", {"posts": posts})
 
 
@@ -40,6 +51,10 @@ def like(request, post_id):
 @login_required
 def following(request):
     posts = []
+
+    page = request.GET.get("page", 1)
+    paginator = Paginator(posts, 10)
+
     fetched_user = User.objects.get(email=request.user.email)
     fetched_following = User.objects.all().filter(following=fetched_user)
 
@@ -47,6 +62,13 @@ def following(request):
         fetched_posts = list(Post.objects.filter(user=follow))
         for flat_post in fetched_posts:
             posts.append(flat_post)
+
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
 
     return render(request, "network/following.html", {"posts": posts})
 
@@ -71,6 +93,8 @@ def user(request, user_id):
         User.objects.all().filter(followers=current_user).count()
     )
     fetched_posts = Post.objects.filter(user=current_user).reverse()
+    page = request.GET.get("page", 1)
+    paginator = Paginator(fetched_posts, 10)
 
     if request.method == "POST":
         if "follow" in request.POST:
@@ -78,6 +102,12 @@ def user(request, user_id):
             return HttpResponseRedirect(
                 reverse("network:user", kwargs={"user_id": user_id})
             )
+    try:
+        fetched_posts = paginator.page(page)
+    except PageNotAnInteger:
+        fetched_posts = paginator.page(1)
+    except EmptyPage:
+        fetched_posts = paginator.page(paginator.num_pages)
 
     return render(
         request,

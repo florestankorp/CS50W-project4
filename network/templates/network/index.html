@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block body %}
+
 <div class="container">
     {% if messages %}
     <ul class="mt-10">
@@ -35,9 +36,14 @@
     </div>
     {% endif %}
 
-    {% for post in posts %}
-    {% include "network/post.html" with post=post %}
+    {% include "network/paginate.html" with posts=posts %}
+
+    {% for page in posts.object_list %}
+    {% include "network/post.html" with post=page %}
     {% endfor %}
+
+    {% include "network/paginate.html" with posts=posts %}
+
 
 </div>
 {% endblock %}
