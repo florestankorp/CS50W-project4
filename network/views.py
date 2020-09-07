@@ -1,11 +1,14 @@
+import json
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import HttpResponse, render
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import Post, User
 
@@ -25,27 +28,25 @@ def index(request):
     return render(request, "network/index.html", {"posts": posts})
 
 
-def post(request):
-    fetched_user = User.objects.get(email=request.user.email)
+@csrf_exempt
+def post(request, post_id):
+    if request.method == "POST" and request.user.is_authenticated():
+        fetched_user = User.objects.get(email=request.user.email)
 
-    if request.method == "POST":
         if "post" in request.POST:
             body = request.POST["post-body"]
             new_post = Post.objects.create(user=fetched_user, body=body)
             new_post.save()
             return HttpResponseRedirect(reverse("network:index"))
 
+    if request.method == "PUT":
+        data = json.loads(request.body)
+
+        if data.get("userId") is not None:
+            toggle_liked(data["userId"], post_id)
+            return HttpResponse(status=204)
+
     return render(request, "network/index.html")
-
-
-@login_required
-def like(request, post_id):
-    fetched_user = User.objects.get(email=request.user.email)
-
-    if request.method == "POST":
-        if "like" in request.POST:
-            toggle_liked(fetched_user, post_id)
-            return HttpResponseRedirect(request.headers["Referer"])
 
 
 @login_required
@@ -196,16 +197,18 @@ def toggle_followed(logged_in_user, current_user):
     return is_logged_in_user_is_following_current_user
 
 
-def toggle_liked(logged_in_user, post_id):
+def toggle_liked(logged_in_user_id, post_id):
 
     fetched_post = Post.objects.get(pk=post_id)
+    fetched_user = User.objects.get(pk=logged_in_user_id)
     has_user_liked_current_post = (
-        fetched_post.likes.all().filter(pk=logged_in_user.pk).exists()
+        fetched_post.likes.all().filter(pk=logged_in_user_id).exists()
     )
 
     if has_user_liked_current_post:
-        fetched_post.likes.remove(logged_in_user)
+        fetched_post.likes.remove(fetched_user)
     else:
-        fetched_post.likes.add(logged_in_user)
+        fetched_post.likes.add(fetched_user)
+    fetched_post.save()
 
     return has_user_liked_current_post
