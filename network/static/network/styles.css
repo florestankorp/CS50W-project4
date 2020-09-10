@@ -4,6 +4,11 @@
     margin-top: 15px;
 }
 
+.top-row {
+    display: flex;
+    justify-content: space-between;
+}
+
 .follow {
     display: flex;
 }
@@ -16,10 +21,14 @@
     color: indianred;
 }
 
-.like-button, .unlike-button, .follow-button, .unfollow-button {
+.like-button, .unlike-button, .follow-button, .unfollow-button, .edit-button {
     background: none;
     cursor: pointer;
     border: 0;
+}
+
+.pb-0 {
+    padding-bottom: 0;
 }
 
 button:focus {
@@ -52,6 +61,10 @@ ul {
 
 .red, .unfollow-button {
     color: indianred;
+}
+
+.green {
+    color: seagreen;
 }
 
 .follow-button, .unfollow-button {

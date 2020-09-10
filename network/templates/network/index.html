@@ -18,7 +18,7 @@
         <div class="card-body">
             <h2 class="card-title">New Post</h2>
             <form id="post-form"
-                  action="{% url 'network:post' %}"
+                  action="{% url 'network:compose' %}"
                   method="post">
                 {% csrf_token %}
                 <div class="form-group">
@@ -28,8 +28,8 @@
                 </div>
                 <button class="post-button btn btn-primary"
                         type="submit"
-                        value=post
-                        name=post>Submit
+                        value="post"
+                        name="post">Submit
                 </button>
             </form>
         </div>
@@ -38,8 +38,8 @@
 
     {% include "network/paginate.html" with posts=posts %}
 
-    {% for page in posts.object_list %}
-    {% include "network/post.html" with post=page %}
+    {% for post in posts.object_list %}
+    {% include "network/post.html" with post=post %}
     {% endfor %}
 
     {% include "network/paginate.html" with posts=posts %}

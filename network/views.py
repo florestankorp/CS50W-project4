@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import IntegrityError
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import HttpResponse, render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
@@ -29,8 +29,8 @@ def index(request):
 
 
 @csrf_exempt
-def post(request, post_id):
-    if request.method == "POST" and request.user.is_authenticated():
+def compose(request):
+    if request.method == "POST" and request.user.is_authenticated:
         fetched_user = User.objects.get(email=request.user.email)
 
         if "post" in request.POST:
@@ -39,14 +39,30 @@ def post(request, post_id):
             new_post.save()
             return HttpResponseRedirect(reverse("network:index"))
 
-    if request.method == "PUT":
+
+@csrf_exempt
+def post(request, post_id):
+    # Query for requested post
+    try:
+        post = Post.objects.get(user=request.user, pk=post_id)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Post not found."}, status=404)
+
+    if request.method == "POST" and request.user.is_authenticated:
+        fetched_user = User.objects.get(email=request.user.email)
+
+        if "post" in request.POST:
+            body = request.POST["post-body"]
+            new_post = Post.objects.create(user=fetched_user, body=body)
+            new_post.save()
+            return HttpResponseRedirect(reverse("network:index"))
+
+    if request.method == "PUT" and request.user.is_authenticated:
         data = json.loads(request.body)
-
-        if data.get("userId") is not None:
-            toggle_liked(data["userId"], post_id)
+        if data.get("body") is not None:
+            post.body = data["body"]
+            post.save()
             return HttpResponse(status=204)
-
-    return render(request, "network/index.html")
 
 
 @login_required

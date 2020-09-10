@@ -7,10 +7,26 @@
 
 <div class="card">
     <div class="card-body">
-        <a href="{% url 'network:user' post.user.pk %}"
-           class="card-title">{{post.user.username}}</a>
-        <p class="card-text">{{post.body}}</p>
-        {% if liked_by_user %}
+        <div class="top-row">
+            <a href="{% url 'network:user' post.user.pk %}"
+               class="card-title">{{post.user.username}}</a>
+            {% if request.user.email ==  post.user.email %}
+            <button class="card-title edit-button red pb-0 bold"
+                    type="submit"
+                    id="{{post.pk}}"
+                    value="edit"
+                    name="edit"
+                    onclick="editPost('{{post.pk}}')">
+                Edit
+            </button>
+            {% endif %}
+        </div>
+        <div id="{{post.pk}}"
+             class="post-container">
+            <p id="{{post.pk}}"
+               class="card-text post-body">{{post.body}}</p>
+        </div>
+        {% if is_liked %}
         <button class="like-button"
                 type="submit"
                 id="{{post.pk}}"
