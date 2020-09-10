@@ -42,23 +42,21 @@ def compose(request):
 
 @csrf_exempt
 def post(request, post_id):
+
     # Query for requested post
     try:
-        post = Post.objects.get(user=request.user, pk=post_id)
+        post = Post.objects.get(pk=post_id)
     except Post.DoesNotExist:
         return JsonResponse({"error": "Post not found."}, status=404)
 
-    if request.method == "POST" and request.user.is_authenticated:
-        fetched_user = User.objects.get(email=request.user.email)
-
-        if "post" in request.POST:
-            body = request.POST["post-body"]
-            new_post = Post.objects.create(user=fetched_user, body=body)
-            new_post.save()
-            return HttpResponseRedirect(reverse("network:index"))
-
     if request.method == "PUT" and request.user.is_authenticated:
         data = json.loads(request.body)
+
+        if data.get("userId") is not None and data.get("postId") is not None:
+            user_id = data.get("userId")
+            toggle_liked(user_id, post_id)
+            return HttpResponse(status=204)
+
         if data.get("body") is not None:
             post.body = data["body"]
             post.save()
@@ -109,7 +107,9 @@ def user(request, user_id):
     fetched_followers = (
         User.objects.all().filter(followers=current_user).count()
     )
-    fetched_posts = Post.objects.filter(user=current_user).reverse()
+    fetched_posts = (
+        Post.objects.filter(user=current_user).order_by("timestamp").reverse()
+    )
     page = request.GET.get("page", 1)
     paginator = Paginator(fetched_posts, 10)
 

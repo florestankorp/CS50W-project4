@@ -1,9 +1,8 @@
 {% load is_liked %}
 {% load static %}
 {% is_liked post.pk request.user.pk as liked_by_user %}
-{{ liked_by_user|json_script:'liked-by-user' }}
 {{ request.user.pk|json_script:'user-id' }}
-{{ post.pk|json_script:'post-id' }}
+
 
 <div class="card">
     <div class="card-body">
@@ -26,7 +25,7 @@
             <p id="{{post.pk}}"
                class="card-text post-body">{{post.body}}</p>
         </div>
-        {% if is_liked %}
+        {% if liked_by_user %}
         <button class="like-button"
                 type="submit"
                 id="{{post.pk}}"

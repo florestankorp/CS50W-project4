@@ -1,18 +1,7 @@
 function toggleLiked(postId) {
-  const likesCount = Array.from(
-    document.querySelectorAll('.likes-count')
-  ).filter((likesCount) => likesCount.id === postId)[0];
-  console.log();
-
   const userId = JSON.parse(document.getElementById('user-id').textContent);
-
-  const likeButtons = Array.from(
-    document.querySelectorAll(`.like-button > i.fa`)
-  );
-
-  const likeButton = likeButtons.filter(
-    (likeButton) => likeButton.id === postId
-  )[0];
+  const likesCount = getElement(postId, '.likes-count');
+  const likeButton = getElement(postId, '.like-button > i.fa');
 
   fetch(`/post/${postId}`, {
     method: 'PUT',
@@ -50,8 +39,20 @@ function editPost(postId) {
   if (editButton.innerHTML === 'Save' && isParagraphEnabled) {
     openTextArea(postId, postContainer);
   } else {
-    openParagraph(postId, postContainer);
+    const body = openParagraph(postId, postContainer);
+    sendUpdate(postId, body);
   }
+}
+
+function sendUpdate(postId, body) {
+  fetch(`/post/${postId}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      body,
+    }),
+  }).catch((error) => {
+    console.log('Error:', error);
+  });
 }
 
 function getElement(postId, className) {
@@ -75,6 +76,7 @@ function toggleButton(editButton) {
 function openTextArea(postId, postContainer) {
   const postBody = getElement(postId, '.post-body');
   const textAreaEl = document.createElement('textarea');
+  textAreaEl.classList.add('form-control');
   postContainer.removeChild(postBody);
   textAreaEl.id = postId;
   textAreaEl.innerText = postBody.innerText;
@@ -87,18 +89,12 @@ function openParagraph(postId, postContainer) {
   paragraphEl.classList.add(...classNames);
 
   const textAreaEl = getElement(postId, 'textarea');
+  const textContent = textAreaEl.value;
   postContainer.removeChild(textAreaEl);
 
   paragraphEl.id = postId;
-  paragraphEl.innerText = textAreaEl.value;
+  paragraphEl.innerText = textContent;
   postContainer.appendChild(paragraphEl);
 
-  fetch(`/post/${postId}`, {
-    method: 'PUT',
-    body: JSON.stringify({
-      body: textAreaEl.value,
-    }),
-  }).catch((error) => {
-    console.log('Error:', error);
-  });
+  return textContent;
 }
