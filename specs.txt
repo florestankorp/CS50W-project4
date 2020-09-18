@@ -1,0 +1,18 @@
+CS50W: Network
+Specs
+
+Write a new Post
+Show all Posts
+Profile Page	
+	Display the number of followers and following
+	Display all of the posts for that user
+	Logged in users can follow and un-follow
+Following Page
+	Display users I am following
+	User has to be logged in to access this page
+Pagination
+	Display ten posts per page
+Edit Post
+	User can edit their own posts
+	Prevent tampering with other users posts
+Like and un-like

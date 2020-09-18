@@ -6,6 +6,7 @@
 <div class="container">
         <h2>{{current_user}}</h2>
         <div class="follow">
+                {% if user.is_authenticated %}
                 <!-- users cannot follow themselves-->
                 {% if current_user.pk != logged_in_user.pk %}
                 <form class="follow-button-form"
@@ -31,6 +32,7 @@
                         {% endif %}
                 </form>
                 <span><small class="text-muted mr-2">|</small></span>
+                {% endif %}
                 {% endif %}
                 <p class="card-text">
                         <small class="text-muted"> <span class="bold">Following: </span> {{following}}</small>

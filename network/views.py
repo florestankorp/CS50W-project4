@@ -62,6 +62,8 @@ def post(request, post_id):
             post.save()
             return HttpResponse(status=204)
 
+    return JsonResponse({"error": "401 Unauthorized"}, status=401)
+
 
 @login_required
 def following(request):
@@ -88,7 +90,6 @@ def following(request):
     return render(request, "network/following.html", {"posts": posts})
 
 
-@login_required
 def user(request, user_id):
     try:
         logged_in_user = request.user
@@ -100,6 +101,15 @@ def user(request, user_id):
     is_followed = (
         current_user.following.all().filter(pk=logged_in_user.pk).exists()
     )
+
+    if request.method == "POST":
+        if "follow" in request.POST:
+            is_followed = toggle_followed(logged_in_user, current_user)
+            return HttpResponseRedirect(
+                reverse("network:user", kwargs={"user_id": user_id})
+            )
+        # else
+    # else
 
     fetched_following = (
         User.objects.all().filter(following=current_user).count()
@@ -113,12 +123,6 @@ def user(request, user_id):
     page = request.GET.get("page", 1)
     paginator = Paginator(fetched_posts, 10)
 
-    if request.method == "POST":
-        if "follow" in request.POST:
-            is_followed = toggle_followed(logged_in_user, current_user)
-            return HttpResponseRedirect(
-                reverse("network:user", kwargs={"user_id": user_id})
-            )
     try:
         fetched_posts = paginator.page(page)
     except PageNotAnInteger:

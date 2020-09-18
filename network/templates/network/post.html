@@ -25,6 +25,8 @@
             <p id="{{post.pk}}"
                class="card-text post-body">{{post.body}}</p>
         </div>
+        {% if user.is_authenticated %}
+
         {% if liked_by_user %}
         <button class="like-button"
                 type="submit"
@@ -46,6 +48,10 @@
                class="fa fa-heart-o"></i>
         </button>
         {% endif %}
+        {% else %}
+        <span class="red">Likes</span>
+        {% endif %}
+
         <span id="{{post.pk}}"
               class="likes-count">{{post.likes.count}}</span>
         <p class="card-text"><small class="text-muted">{{post.timestamp}}</small></p>
